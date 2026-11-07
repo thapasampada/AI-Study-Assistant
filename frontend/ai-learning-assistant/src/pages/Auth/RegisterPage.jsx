@@ -1,0 +1,190 @@
+import { useState } from 'react'
+import { Link, useNavigate } from 'react-router-dom'
+
+import authService from '../../services/authService'
+import { BrainCircuit, Mail, Lock, ArrowRight, User, Eye, EyeOff } from 'lucide-react'
+import toast from 'react-hot-toast'
+
+const RegisterPage = () => {
+  const [username, setUsername] = useState('')
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
+  const [showPassword, setShowPassword] = useState(false)
+  const [error, setError] = useState('')
+  const [loading, setLoading] = useState(false)
+  const [focusedField, setFocusedField] = useState(null)
+
+  const navigate = useNavigate()
+
+  const handleSubmit = async (e) => {
+    e.preventDefault()
+
+    if (password.length < 6) {
+      setError('Password must be at least 6 characters long.')
+      return
+    }
+
+    setError('')
+    setLoading(true)
+
+    try {
+      await authService.register(username, email, password)
+      toast.success('Registered successfully! Please LogIn')
+      navigate('/login')
+    } catch (error) {
+      setError(error.message || 'Failed to register. Please try again.')
+      toast.error(error.message || 'Failed to register.')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  return (
+    <div className='flex items-center justify-center min-h-screen bg-linear-to-br from-[#F7FAFB] via-white to-[#EAF2F2]'>
+      <div className='absolute inset-0 bg-[radial-gradient(#DCE6E8_1px,transparent_1px)] bg-size-[16px_16px] opacity-40' />
+      <div className='relative w-full max-w-md px-6'>
+        <div className='bg-white/80 backdrop-blur-xl border border-[#DCE6E8] rounded-3xl shadow-xl shadow-[#4F9DA6]/10 p-10'>
+          {/* Header */}
+          <div className='text-center mb-10'>
+            <div className='inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-linear-to-br from-[#4F9DA6] to-[#3D7F87] shadow-lg shadow-[#4F9DA6]/25 mb-6'>
+              <BrainCircuit className='w-7 h-7 text-white' strokeWidth={2} />
+            </div>
+            <h1 className='text-2xl font-medium text-[#2A3439] tracking-tight mb-2'>Create an account!</h1>
+            <p className='text-[#647278] text-sm'>Start your AI-Powered learning experience</p>
+          </div>
+
+          {/* Form */}
+          <form onSubmit={handleSubmit} className='space-y-5'>
+            {/* Username Field */}
+            <div className='space-y-2'>
+              <label htmlFor='username' className='block text-xs font-semibold text-[#2A3439] uppercase tracking-wide'>Username</label>
+              <div className='relative group'>
+                <div className={`absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none transition-colors duration-200 ${
+                  focusedField === 'username' ? 'text-[#4F9DA6]' : 'text-[#9CB0B4]'
+                }`}>
+                  <User className='h-5 w-5' strokeWidth={2} />
+                </div>
+                <input
+                  id='username'
+                  type='text'
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
+                  onFocus={() => setFocusedField('username')}
+                  onBlur={() => setFocusedField(null)}
+                  required
+                  autoComplete='username'
+                  className='w-full h-12 pl-12 pr-4 border-2 border-[#DCE6E8] rounded-xl bg-[#F7FAFB]/70 text-[#2A3439] placeholder-[#9CB0B4] text-sm font-medium transition-all duration-200 focus:outline-none focus:border-[#4F9DA6] focus:bg-white focus:shadow-lg focus:shadow-[#4F9DA6]/10'
+                  placeholder='JohnDoe101'
+                />
+              </div>
+            </div>
+
+            {/* Email Field */}
+            <div className='space-y-2'>
+              <label htmlFor='email' className='block text-xs font-semibold text-[#2A3439] uppercase tracking-wide'>Email</label>
+              <div className='relative group'>
+                <div className={`absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none transition-colors duration-200 ${
+                  focusedField === 'email' ? 'text-[#4F9DA6]' : 'text-[#9CB0B4]'
+                }`}>
+                  <Mail className='h-5 w-5' strokeWidth={2} />
+                </div>
+                <input
+                  id='email'
+                  type='email'
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  onFocus={() => setFocusedField('email')}
+                  onBlur={() => setFocusedField(null)}
+                  required
+                  autoComplete='email'
+                  className='w-full h-12 pl-12 pr-4 border-2 border-[#DCE6E8] rounded-xl bg-[#F7FAFB]/70 text-[#2A3439] placeholder-[#9CB0B4] text-sm font-medium transition-all duration-200 focus:outline-none focus:border-[#4F9DA6] focus:bg-white focus:shadow-lg focus:shadow-[#4F9DA6]/10'
+                  placeholder='johndoe@example.com'
+                />
+              </div>
+            </div>
+
+            {/* Password Field */}
+            <div className='space-y-2'>
+              <label htmlFor='password' className='block text-xs font-semibold text-[#2A3439] uppercase tracking-wide'>Password</label>
+              <div className='relative group'>
+                <div className={`absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none transition-colors duration-200 ${
+                  focusedField === 'password' ? 'text-[#4F9DA6]' : 'text-[#9CB0B4]'
+                }`}>
+                  <Lock className='h-5 w-5' strokeWidth={2} />
+                </div>
+                <input
+                  id='password'
+                  type={showPassword ? 'text' : 'password'}
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  onFocus={() => setFocusedField('password')}
+                  onBlur={() => setFocusedField(null)}
+                  required
+                  autoComplete='new-password'
+                  className='w-full h-12 pl-12 pr-12 border-2 border-[#DCE6E8] rounded-xl bg-[#F7FAFB]/70 text-[#2A3439] placeholder-[#9CB0B4] text-sm font-medium transition-all duration-200 focus:outline-none focus:border-[#4F9DA6] focus:bg-white focus:shadow-lg focus:shadow-[#4F9DA6]/10'
+                  placeholder='********'
+                />
+                <button
+                  type='button'
+                  onClick={() => setShowPassword((prev) => !prev)}
+                  aria-label={showPassword ? 'Hide password' : 'Show password'}
+                  className='absolute inset-y-0 right-0 pr-4 flex items-center text-[#9CB0B4] hover:text-[#4F9DA6] transition-colors duration-200 focus:outline-none'
+                >
+                  {showPassword ? (
+                    <EyeOff className='h-5 w-5' strokeWidth={2} />
+                  ) : (
+                    <Eye className='h-5 w-5' strokeWidth={2} />
+                  )}
+                </button>
+              </div>
+            </div>
+
+            {/* Error Message */}
+            {error && (
+              <div className='rounded-lg bg-[#FBEEEC] border border-[#F0CFC8] p-3'>
+                <p className='text-xs text-[#B8543F] font-medium text-center'>{error}</p>
+              </div>
+            )}
+
+            {/* Submit Button */}
+            <button
+              type='submit'
+              disabled={loading}
+              className='group relative w-full h-12 bg-linear-to-r from-[#4F9DA6] to-[#3D7F87] hover:from-[#468D95] hover:to-[#356E75] active:scale-[0.98] text-white text-sm font-semibold rounded-xl transition-all duration-200 focus:outline-none focus:ring-4 focus:ring-[#4F9DA6]/20 disabled:cursor-not-allowed disabled:active:scale-100 shadow-lg shadow-[#4F9DA6]/25 overflow-hidden'
+            >
+              <span className='relative z-10 flex items-center justify-center gap-2'>
+                {loading ? (
+                  <>
+                    <div className='w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin' />
+                    Creating Account...
+                  </>
+                ) : (
+                  <>
+                    Create account
+                    <ArrowRight className='w-4 h-4 group-hover:translate-x-1 transition-transform duration-200' strokeWidth={2.5} />
+                  </>
+                )}
+              </span>
+              <div className='absolute inset-0 bg-linear-to-r from-white/0 via-white/20 to-white/0 -translate-x-full group-hover:translate-x-full transition-transform duration-700' />
+            </button>
+          </form>
+
+          {/* Footer */}
+          <div className='mt-8 pt-6 border-t border-[#DCE6E8]'>
+            <p className='text-center text-sm text-[#647278]'>
+              Already have an account?{' '}
+              <Link to='/login' className='font-semibold text-[#3D7F87] hover:text-[#2E6167] transition-colors duration-200'>Sign in</Link>
+            </p>
+          </div>
+        </div>
+
+        {/* Subtle footer text */}
+        <p className='text-center text-xs text-[#9CB0B4] mt-6'>
+          By continuing, you agree to our Terms & Privacy Policy
+        </p>
+      </div>
+    </div>
+  )
+}
+
+export default RegisterPage
